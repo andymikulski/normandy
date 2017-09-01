@@ -40,21 +40,30 @@ function history(state = new Map(), action) {
 
 
 function items(state = new Map(), action) {
-  let recipe;
+  const formatRecipe = recipe =>
+    recipe
+      .set('action_id', recipe.getIn(['action', 'id'], null))
+      .set('latest_revision_id', recipe.getIn(['latest_revision', 'id'], null))
+      .set('approved_revision_id', recipe.getIn(['approved_revision', 'id'], null))
+      .remove('action')
+      .remove('latest_revision')
+      .remove('approved_revision');
 
   switch (action.type) {
     case RECIPE_RECEIVE: {
-      recipe = fromJS(action.recipe);
+      const recipe = fromJS(action.recipe);
+      return state.set(action.recipe.id, formatRecipe(recipe));
+    }
 
-      recipe = recipe
-        .set('action_id', recipe.getIn(['action', 'id'], null))
-        .set('latest_revision_id', recipe.getIn(['latest_revision', 'id'], null))
-        .set('approved_revision_id', recipe.getIn(['approved_revision', 'id'], null))
-        .remove('action')
-        .remove('latest_revision')
-        .remove('approved_revision');
+    case RECIPE_PAGE_RECEIVE: {
+      const recipes = fromJS(action.recipes.results);
+      let newState = state;
 
-      return state.set(action.recipe.id, recipe);
+      recipes.forEach(receivedRecipe => {
+        newState = newState.set(receivedRecipe.get('id'), formatRecipe(receivedRecipe));
+      });
+
+      return newState;
     }
 
     case RECIPE_DELETE:
