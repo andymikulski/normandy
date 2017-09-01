@@ -25,7 +25,7 @@ import React from 'react';
  * Usage example:
  *
  * @createForm({})
- * class MyForm extends React.Component {
+ * class MyForm extends React.PureComponent {
  *   render() {
  *     const { onSubmit } = this.props;
  *     return (
@@ -47,7 +47,7 @@ import React from 'react';
 export function createForm({ validateFields, ...formConfig }) {
   return FormComponent => {
     @autobind
-    class WrappedForm extends React.Component {
+    class WrappedForm extends React.PureComponent {
       static propTypes = {
         // Form object injected by Form.create.
         form: PropTypes.object.isRequired,
@@ -138,7 +138,7 @@ export function createForm({ validateFields, ...formConfig }) {
  *   An object detailing any validation errors passed in to the parent form.
  */
 export function connectFormProps(Component) {
-  return class Wrapper extends React.Component {
+  return class Wrapper extends React.PureComponent {
     static wrappedComponent = Component;
 
     static contextTypes = {
