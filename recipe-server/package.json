@@ -11,7 +11,7 @@
     "build": "npm run build:vendor && npm run build:app;",
     "build:app": "webpack --config ./webpack.config.js",
     "build:vendor": "webpack --config ./vendor.webpack.config.js",
-    "test": "NODE_ENV=production karma start",
+    "test": "karma start",
     "lint:js": "eslint normandy client karma.conf.js webpack.config.js *.webpack.config.js",
     "lint:css": "stylelint 'client/**/*.less' --config .stylelintrc",
     "lint:js-security": "nsp check .",
