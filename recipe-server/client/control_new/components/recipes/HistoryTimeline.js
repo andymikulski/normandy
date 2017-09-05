@@ -39,20 +39,18 @@ export default class HistoryTimeline extends React.PureComponent {
     if (revision.get('id') === this.props.selectedRevisionId) {
       color = 'blue';
       iconType = 'circle-left';
-    } else {
-      if (approvalRequest && approvalRequest.get('approved') === null) {
+    } else if (approvalRequest && approvalRequest.get('approved') === null) {
         // pending
-        color = 'yellow';
-        iconType = 'clock-circle-o';
-      } else if (approvalRequest && approvalRequest.get('approved')) {
+      color = 'yellow';
+      iconType = 'clock-circle-o';
+    } else if (approvalRequest && approvalRequest.get('approved')) {
         // approved
-        color = 'green';
-        iconType = 'check-circle';
-      } else if (approvalRequest && !approvalRequest.get('approved')) {
+      color = 'green';
+      iconType = 'check-circle';
+    } else if (approvalRequest && !approvalRequest.get('approved')) {
         // rejected
-        color = 'red';
-        iconType = 'close-circle';
-      }
+      color = 'red';
+      iconType = 'close-circle';
     }
 
     color = color || 'grey';
@@ -76,7 +74,6 @@ export default class HistoryTimeline extends React.PureComponent {
       history,
       isLatestRevision,
       recipeId,
-      selectedRevisionId,
     } = this.props;
 
     return (
@@ -86,7 +83,6 @@ export default class HistoryTimeline extends React.PureComponent {
           <Timeline>
             {
               history.map((revision, index) => {
-
                 let url = `/recipe/${recipeId}`;
                 if (!isLatestRevision(revision.get('id'))) {
                   url += `/rev/${revision.get('id')}`;

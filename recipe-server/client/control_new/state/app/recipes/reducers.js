@@ -38,17 +38,16 @@ function history(state = new Map(), action) {
   }
 }
 
+const formatRecipe = recipe =>
+  recipe
+    .set('action_id', recipe.getIn(['action', 'id'], null))
+    .set('latest_revision_id', recipe.getIn(['latest_revision', 'id'], null))
+    .set('approved_revision_id', recipe.getIn(['approved_revision', 'id'], null))
+    .remove('action')
+    .remove('latest_revision')
+    .remove('approved_revision');
 
 function items(state = new Map(), action) {
-  const formatRecipe = recipe =>
-    recipe
-      .set('action_id', recipe.getIn(['action', 'id'], null))
-      .set('latest_revision_id', recipe.getIn(['latest_revision', 'id'], null))
-      .set('approved_revision_id', recipe.getIn(['approved_revision', 'id'], null))
-      .remove('action')
-      .remove('latest_revision')
-      .remove('approved_revision');
-
   switch (action.type) {
     case RECIPE_RECEIVE: {
       const recipe = fromJS(action.recipe);
