@@ -47,7 +47,7 @@ import React from 'react';
 export function createForm({ validateFields, ...formConfig }) {
   return FormComponent => {
     @autobind
-    class WrappedForm extends React.PureComponent {
+    class WrappedForm extends React.Component {
       static propTypes = {
         // Form object injected by Form.create.
         form: PropTypes.object.isRequired,
@@ -138,7 +138,7 @@ export function createForm({ validateFields, ...formConfig }) {
  *   An object detailing any validation errors passed in to the parent form.
  */
 export function connectFormProps(Component) {
-  return class Wrapper extends React.PureComponent {
+  return class Wrapper extends React.Component {
     static wrappedComponent = Component;
 
     static contextTypes = {
