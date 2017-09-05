@@ -1,4 +1,5 @@
 import { Icon, Tag, Timeline } from 'antd';
+import autobind from 'autobind-decorator';
 import { List } from 'immutable';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -20,12 +21,54 @@ import {
     isLatestRevision: id => isLatestRevisionSelector(state, id),
   }),
 )
+@autobind
 export default class HistoryTimeline extends React.PureComponent {
   static propTypes = {
     history: PropTypes.instanceOf(List).isRequired,
     isLatestRevision: PropTypes.func.isRequired,
     recipeId: PropTypes.number.isRequired,
     selectedRevisionId: PropTypes.string.isRequired,
+  }
+
+  getRevisionStyles(revision) {
+    const approvalRequest = revision.get('approval_request');
+
+    let iconType;
+    let color;
+
+    if (revision.get('id') === this.props.selectedRevisionId) {
+      color = 'blue';
+      iconType = 'circle-left';
+    } else {
+      if (approvalRequest && approvalRequest.get('approved') === null) {
+        // pending
+        color = 'yellow';
+        iconType = 'clock-circle-o';
+      } else if (approvalRequest && approvalRequest.get('approved')) {
+        // approved
+        color = 'green';
+        iconType = 'check-circle';
+      } else if (approvalRequest && !approvalRequest.get('approved')) {
+        // rejected
+        color = 'red';
+        iconType = 'close-circle';
+      }
+    }
+
+    color = color || 'grey';
+
+    const icon = !iconType ? null : (
+      <Icon
+        type={iconType}
+        color={color}
+        style={{ fontSize: '16px' }}
+      />
+    );
+
+    return {
+      icon,
+      color,
+    };
   }
 
   render() {
@@ -43,21 +86,22 @@ export default class HistoryTimeline extends React.PureComponent {
           <Timeline>
             {
               history.map((revision, index) => {
-                const icon = <Icon type="circle-left" style={{ fontSize: '16px' }} />;
 
                 let url = `/recipe/${recipeId}`;
                 if (!isLatestRevision(revision.get('id'))) {
                   url += `/rev/${revision.get('id')}`;
                 }
 
+                const { icon, color } = this.getRevisionStyles(revision);
+
                 return (
                   <Timeline.Item
-                    color="grey"
-                    dot={revision.get('id') === selectedRevisionId ? icon : null}
+                    color={color}
+                    dot={icon}
                     key={revision.get('id')}
                   >
                     <Link href={url}>
-                      <Tag color={revision.get('id') === selectedRevisionId ? 'blue' : null}>
+                      <Tag color={icon && color}>
                         {`Revision ${history.size - index}`}
                       </Tag>
                     </Link>

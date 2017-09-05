@@ -83,7 +83,7 @@ export default class RevisionApprovalTag extends React.PureComponent {
     }
 
     return (
-      <Popover overlayClassName="timeline-popover" content={popoverContent} placement="right">
+      <Popover overlayClassName="timeline-popover" content={popoverContent} placement="left">
         <Link href={`/recipe/${revision.getIn(['recipe', 'id'])}/approval_history`}>
           <Tag color={color}>
             {label}
