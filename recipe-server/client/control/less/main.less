@@ -69,13 +69,17 @@ body {
 }
 
 .logo {
-  color: #333;
   font-size: 22px;
   font-weight: 900;
   padding-left: 48px;
   position: relative;
-  text-shadow: 1px 1px 0 fade(@white, 55%);
+  text-shadow: 0 1px 5px fade(@white, 40%);
   white-space: nowrap;
+
+  &,
+  a {
+    color: @ink-70;
+  }
 
   &::before {
     background: url('../img/logo.png');
@@ -127,8 +131,12 @@ fieldset {
   border: none;
 
   legend {
-    color: #222;
-    font-weight: bold;
+    border-bottom: none;
+    border-top: 1px dashed #D9D9D9;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 1em 0;
+    padding-top: 1em;
   }
 }
 
