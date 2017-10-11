@@ -16,135 +16,39 @@ import RecipeListing from 'control/components/recipes/RecipeListing';
 import MissingPage from 'control/components/pages/MissingPage';
 import RecipeDetailPage from 'control/components/recipes/RecipeDetailPage';
 
-import { searchRouteTree, replaceUrlVariables } from './routerUtils';
-
-
-/**
- * @type {Route}
- * @property {Component} component    React component used to render route
- * @property {String}    crumb        Displayed text on navigational breadcrumbs
- * @property {String}    slug         Internal route name
- * @property {String}    sessionSlug  Optional replacement slug used with session history.
- * @property {Route}     '/[...]'     Optional nested route tree(s).
- */
+import { Route, lilRouterize, replaceUrlVariables } from './routerUtils';
 
 const routes = {
-  '/': {
-    component: Gateway,
-    crumb: 'Home',
-    slug: 'home',
+  '/': new Route('home', Gateway),
 
-    '/recipe': {
-      crumb: 'Recipes Listing',
+  '/recipe/': new Route('recipe-listing', RecipeListing),
+  '/recipe/new/': new Route('create-recipe', CreateRecipePage),
+  '/recipe/:recipeId/': new Route('view-recipe', RecipeDetailPage),
+  '/recipe/:recipeId/edit/': new Route('edit-recipe', EditRecipePage),
+  '/recipe/:recipeId/clone/': new Route('clone-recipe', CloneRecipePage),
+  '/recipe/:recipeId/approval_history/': new Route('approval-history', ApprovalHistoryPage),
+  '/recipe/:recipeId/rev/:revisionId/': new Route('view-revision', RecipeDetailPage),
+  '/recipe/:recipeId/rev/:revisionId/clone/': new Route('clone-revision', CloneRecipePage),
 
-      '/': {
-        component: RecipeListing,
-        slug: 'recipe-listing',
-      },
-
-      '/new': {
-        crumb: 'New Recipe',
-
-        '/': {
-          component: CreateRecipePage,
-          slug: 'recipe-new',
-        },
-      },
-
-      '/:recipeId': {
-        crumb: 'View Recipe',
-
-        '/': {
-          component: RecipeDetailPage,
-          slug: 'recipe-view',
-        },
-
-        '/rev/:revisionId': {
-          crumb: 'Revision',
-
-          '/': {
-            component: RecipeDetailPage,
-            sessionSlug: 'recipe-view',
-            slug: 'recipe-revision',
-          },
-
-          '/clone': {
-            crumb: 'Clone Revision',
-
-            '/': {
-              component: CloneRecipePage,
-              sessionSlug: 'recipe-view',
-              slug: 'recipe-revision-clone',
-            },
-          },
-        },
-
-        '/edit': {
-          crumb: 'Edit Recipe',
-
-          '/': {
-            component: EditRecipePage,
-            sessionSlug: 'recipe-view',
-            slug: 'recipe-edit',
-          },
-        },
-
-        '/approval_history': {
-          crumb: 'Approval History',
-
-          '/': {
-            component: ApprovalHistoryPage,
-            sessionSlug: 'recipe-view',
-            slug: 'recipe-approval-history',
-          },
-        },
-
-        '/clone': {
-          crumb: 'Clone Recipe',
-
-          '/': {
-            component: CloneRecipePage,
-            sessionSlug: 'recipe-view',
-            slug: 'recipe-clone',
-          },
-        },
-      },
-    },
-
-    '/extension': {
-      crumb: 'Extensions Listing',
-
-      '/': {
-        component: ExtensionListing,
-        slug: 'extension-listing',
-      },
-
-      '/new': {
-        crumb: 'New Extension',
-
-        '/': {
-          component: CreateExtensionPage,
-          slug: 'extension-new',
-        },
-      },
-
-      '/:extensionId': {
-        crumb: 'Edit Extension',
-
-        '/': {
-          component: EditExtensionPage,
-          slug: 'extension-edit',
-        },
-      },
-    },
-  },
+  '/extension/': new Route('extension-listing', ExtensionListing),
+  '/extension/new/': new Route('new-extension', CreateExtensionPage),
+  '/extension/:extensionId/': new Route('view-extension', EditExtensionPage),
 };
 
+
 export const getNamedRoute = (name, params = {}) => {
-  const url = searchRouteTree(routes, name);
+  let url;
+  for (const path in routes) {
+    if (routes[path].slug === name) {
+      url = path;
+      break;
+    }
+  }
+
   if (url) {
     return replaceUrlVariables(url, params);
   }
+
   return null;
 };
 
@@ -153,7 +57,7 @@ export const {
   middleware,
   enhancer,
 } = routerForBrowser({
-  routes,
+  routes: lilRouterize(routes),
   basename: '',
 });
 
