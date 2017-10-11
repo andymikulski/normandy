@@ -6,18 +6,22 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import QueryMultipleExtensions from 'control/components/data/QueryMultipleExtensions';
-import { getExtensionListing } from 'control/state/app/extensions/selectors';
+import QueryExtension from 'control/components/data/QueryExtension';
+import { getExtensionByXPI, getExtensionListing } from 'control/state/app/extensions/selectors';
 import { isRequestInProgress } from 'control/state/app/requests/selectors';
 
 const { OptGroup, Option } = Select;
 
 @connect(
-  state => ({
-    extensions: getExtensionListing(state),
-    // For search results, we can assume that we'll always be loading just the
-    // first page, so this request ID is a constant.
-    isLoadingSearch: isRequestInProgress(state, 'fetch-extensions-page-1'),
-  }),
+  (state, props) => {
+    return ({
+      extensions: getExtensionListing(state),
+      currentExtension: getExtensionByXPI(state, props.value),
+      // For search results, we can assume that we'll always be loading just the
+      // first page, so this request ID is a constant.
+      isLoadingSearch: isRequestInProgress(state, 'fetch-extensions-page-1'),
+    });
+  }
 )
 @autobind
 export default class ExtensionSelect extends React.Component {
@@ -54,12 +58,21 @@ export default class ExtensionSelect extends React.Component {
       this.setState({
         search,
       });
-    }, 200);
+    }, 500);
   }
 
   render() {
     const { search } = this.state;
-    let displayedList = this.props.extensions;
+    const { extensions, currentExtension } = this.props;
+    let displayedList = extensions;
+
+    if (currentExtension) {
+      // Ensure the selected value is not placed into the displayedList twice.
+      if(!displayedList.find(item => item.get('xpi') === currentExtension)) {
+        displayedList = displayedList.unshift(currentExtension);
+      }
+    }
+
     const queryFilters = search ? { text: search } : {};
 
     const {
@@ -84,6 +97,7 @@ export default class ExtensionSelect extends React.Component {
     return (
       <div>
         <QueryMultipleExtensions filters={queryFilters} pageNumber={1} />
+        {value && <QueryExtension pk={value} />}
         <Select
           value={value || undefined}
           disabled={disabled}

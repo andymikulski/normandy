@@ -7,6 +7,10 @@ export function getExtension(state, id, defaultsTo = null) {
   return state.app.extensions.items.get(id, defaultsTo);
 }
 
+export function getExtensionByXPI(state, xpi, defaultsTo = null) {
+  return state.app.extensions.items.find(item => item.get('xpi') === xpi) || defaultsTo;
+}
+
 export function getExtensionListingCount(state) {
   return state.app.extensions.listing.get('count');
 }

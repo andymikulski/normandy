@@ -16,6 +16,14 @@ function items(state = new Map(), action) {
     case EXTENSION_RECEIVE:
       return state.set(action.extension.id, fromJS(action.extension));
 
+    case EXTENSION_PAGE_RECEIVE: {
+      return state.withMutations(mutState => {
+        action.extensions.results.map(extension => {
+          mutState.set(extension.id, fromJS(extension));
+        });
+      });
+    }
+
     default:
       return state;
   }

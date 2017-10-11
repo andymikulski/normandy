@@ -33,12 +33,6 @@ export function fetchExtensionsPage(pageNumber = 1, filters = {}) {
       },
     }));
 
-    extensions.results.forEach(extension => {
-      dispatch({
-        type: EXTENSION_RECEIVE,
-        extension,
-      });
-    });
 
     dispatch({
       type: EXTENSION_PAGE_RECEIVE,
